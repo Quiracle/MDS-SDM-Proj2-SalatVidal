@@ -1,0 +1,15 @@
+services:
+  graphdb:
+    image: ontotext/graphdb:10.4.0
+    container_name: graphdb
+    ports:
+      - "7200:7200"
+    volumes:
+      - graphdb-data:/opt/graphdb/home
+      - ./graphdb/graphdb.properties:/opt/graphdb/dist/conf/graphdb.properties
+    environment:
+      - JAVA_OPTS=-Xmx2000m
+    entrypoint: ["/opt/graphdb/dist/bin/graphdb"]
+
+volumes:
+  graphdb-data:
