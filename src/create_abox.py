@@ -41,7 +41,6 @@ def create_abox():
     for keyword in all_keywords:
         topic_uri = create_uri(PUB.Topic, keyword)
         topics[keyword] = topic_uri
-        g.add((topic_uri, RDF.type, PUB.Topic))
         g.add((topic_uri, RDFS.label, Literal(keyword)))
     
     # Create Venue instances
@@ -49,7 +48,6 @@ def create_abox():
     for venue in editions_df['venue'].dropna().unique():
         venue_uri = create_uri(PUB.Venue, venue)
         venues[venue] = venue_uri
-        g.add((venue_uri, RDF.type, PUB.Venue))
         g.add((venue_uri, RDFS.label, Literal(venue)))
     
     # Create Author instances
@@ -57,7 +55,6 @@ def create_abox():
     for _, row in authors_df.dropna(subset=['author_id']).iterrows():
         author_uri = create_uri(PUB.Author, row['author_id'])
         authors[row['author_id']] = author_uri
-        g.add((author_uri, RDF.type, PUB.Author))
         g.add((author_uri, PUB.hasName, Literal(row['name'])))
         if pd.notna(row['email']):
             g.add((author_uri, PUB.hasEmail, Literal(row['email'])))
@@ -67,13 +64,11 @@ def create_abox():
     for _, row in conferences_df.dropna(subset=['name']).iterrows():
         event_uri = create_uri(PUB.Conference, row['name'])
         events[row['name']] = event_uri
-        g.add((event_uri, RDF.type, PUB.Conference))
         g.add((event_uri, RDFS.label, Literal(row['name'])))
     
     for _, row in workshops_df.dropna(subset=['name']).iterrows():
         event_uri = create_uri(PUB.Workshop, row['name'])
         events[row['name']] = event_uri
-        g.add((event_uri, RDF.type, PUB.Workshop))
         g.add((event_uri, RDFS.label, Literal(row['name'])))
     
     # Create Edition instances and their Proceedings
@@ -82,7 +77,6 @@ def create_abox():
     for _, row in editions_df.dropna(subset=['edition_id', 'venue']).iterrows():
         edition_uri = create_uri(PUB.Edition, row['edition_id'])
         editions[row['edition_id']] = edition_uri
-        g.add((edition_uri, RDF.type, PUB.Edition))
         if pd.notna(row['year']):
             g.add((edition_uri, PUB.hasYear, Literal(int(row['year']), datatype=XSD.gYear)))
         if row['venue'] in venues:
@@ -92,7 +86,6 @@ def create_abox():
         # Create a Proceeding for each Edition
         proceeding_uri = create_uri(PUB.Proceeding, row['edition_id'])
         proceedings[row['edition_id']] = proceeding_uri
-        g.add((proceeding_uri, RDF.type, PUB.Proceeding))
         g.add((edition_uri, PUB.hasProceedings, proceeding_uri))
     
     # Create Journal instances
@@ -100,7 +93,6 @@ def create_abox():
     for _, row in journals_df.dropna(subset=['name']).iterrows():
         journal_uri = create_uri(PUB.Journal, row['name'])
         journals[row['name']] = journal_uri
-        g.add((journal_uri, RDF.type, PUB.Journal))
         g.add((journal_uri, RDFS.label, Literal(row['name'])))
     
     # Create Volume instances
@@ -108,7 +100,6 @@ def create_abox():
     for _, row in volumes_df.dropna(subset=['journal_name', 'year', 'number']).iterrows():
         volume_uri = create_uri(PUB.Volume, f"{row['journal_name']}_{row['year']}_{row['number']}")
         volumes[f"{row['journal_name']}_{row['year']}_{row['number']}"] = volume_uri
-        g.add((volume_uri, RDF.type, PUB.Volume))
         g.add((volume_uri, PUB.hasYear, Literal(int(row['year']), datatype=XSD.gYear)))
         g.add((volume_uri, PUB.hasVolumeNumber, Literal(int(row['number']), datatype=XSD.integer)))
         if row['journal_name'] in journals:
@@ -118,7 +109,6 @@ def create_abox():
     # Create Paper instances and their relationships
     for _, row in papers_df.dropna(subset=['paper_id']).iterrows():
         paper_uri = create_uri(PUB.Paper, row['paper_id'])
-        g.add((paper_uri, RDF.type, PUB.Paper))
         g.add((paper_uri, RDFS.label, Literal(row['title'])))
         if pd.notna(row['abstract']):
             g.add((paper_uri, PUB.hasAbstract, Literal(row['abstract'])))
@@ -175,7 +165,7 @@ def create_abox():
             paper_uri = create_uri(PUB.Paper, row['paper_id'])
             reviewer_uri = authors[row['reviewer_id']]
             review_uri = create_uri(PUB.Review, f"{row['paper_id']}_{row['reviewer_id']}")
-            g.add((review_uri, RDF.type, PUB.Review))
+            # g.add((review_uri, RDF.type, PUB.Review))
             g.add((review_uri, PUB.isAssignedBy, reviewer_uri))
             if pd.notna(row['review_text']):
                 g.add((review_uri, PUB.hasReviewText, Literal(row['review_text'])))
