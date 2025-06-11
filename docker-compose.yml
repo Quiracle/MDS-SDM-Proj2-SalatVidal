@@ -5,7 +5,8 @@ services:
     ports:
       - "7200:7200"
     volumes:
-      - graphdb-data:/opt/graphdb/home
+      - ./graphdb-data:/opt/graphdb/dist/data
+      - ./graphdb-import:/root/graphdb-import
       - ./graphdb/graphdb.properties:/opt/graphdb/dist/conf/graphdb.properties
     environment:
       - JAVA_OPTS=-Xmx2000m
@@ -13,3 +14,6 @@ services:
 
 volumes:
   graphdb-data:
+    driver: local
+  graphdb-import:
+    driver: local
