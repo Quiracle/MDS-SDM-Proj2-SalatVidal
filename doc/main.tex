@@ -207,81 +207,242 @@ These assumptions and design decisions, combined with the robust data validation
 
 \subsection{Querying the Ontology}
 
-To demonstrate the benefits of having an explicit TBOX and enabling reasoning in our knowledge graph, we created two SPARQL queries that showcase different aspects of our ontology.
+To demonstrate the benefits of having an explicit TBOX defined and enabling reasoning, we have created two SPARQL queries that showcase different aspects of our knowledge graph:
 
-\subsubsection{Query 1: Finding Corresponding Authors}
+\subsubsection{Author's Publication History with Venue Details}
+This query demonstrates how we can traverse multiple relationships to get comprehensive information about an author's publications:
 
-The first query demonstrates how reasoning helps us find all papers and their corresponding authors, taking advantage of the subproperty relationship between \texttt{hasCorrespondingAuthor} and \texttt{hasAuthor}:
-
-\begin{lstlisting}[language=SQL]
-PREFIX pub: <http://example.org/publication/>
+\begin{verbatim}
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-SELECT DISTINCT ?paper ?paperTitle ?author ?authorName
-WHERE {
-    ?paper rdf:type pub:Paper .
-    ?paper rdfs:label ?paperTitle .
-    ?paper pub:hasCorrespondingAuthor ?author .
-    ?author pub:hasName ?authorName .
-}
-ORDER BY ?paperTitle
-\end{lstlisting}
-
-This query showcases the power of reasoning in several ways:
-\begin{itemize}
-    \item It uses the \texttt{hasCorrespondingAuthor} subproperty of \texttt{hasAuthor}, allowing us to find all corresponding authors through reasoning
-    \item The TBOX helps us understand the relationships between papers and authors by explicitly defining these relationships
-    \item The query results show how the ontology structure enables us to easily find specific types of authors (corresponding authors) without having to explicitly store this information in the ABOX
-\end{itemize}
-
-\subsubsection{Query 2: Finding Papers in Events}
-
-The second query demonstrates how reasoning helps us find all papers published in conferences or workshops, taking advantage of the event hierarchy:
-
-\begin{lstlisting}[language=SQL]
 PREFIX pub: <http://example.org/publication/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-SELECT DISTINCT ?paper ?paperTitle ?event ?eventName ?year
-WHERE {
-    ?paper rdf:type pub:Paper .
-    ?paper rdfs:label ?paperTitle .
-    ?paper pub:isPublishedIn ?edition .
-    ?edition rdf:type pub:Edition .
-    ?edition pub:hasYear ?year .
-    ?event pub:hasEdition ?edition .
-    ?event rdfs:label ?eventName .
-    {
-        ?event rdf:type pub:Conference .
-    } UNION {
-        ?event rdf:type pub:Workshop .
-    }
+SELECT DISTINCT ?paper ?author ?conference ?venue WHERE{
+    ?paper pub:hasAuthor ?author .
+    ?author pub:hasName "E. Stefanakis" .
+    ?paper pub:isPublishedIn ?proceeding .
+    ?edition pub:hasProceedings ?proceeding;
+             pub:hasVenue ?venue .
+    ?conference pub:hasEdition ?edition .
 }
-ORDER BY ?year ?eventName ?paperTitle
-\end{lstlisting}
+\end{verbatim}
 
-This query showcases the power of reasoning in several ways:
+This query showcases several benefits of our TBOX design:
 \begin{itemize}
-    \item It uses the event hierarchy (Conference and Workshop as subclasses of Event) to find papers published in any type of event
-    \item The TBOX helps us understand the publication structure by explicitly defining the relationships between papers, editions, and events
-    \item The query results show how the ontology structure enables us to easily find papers published in specific types of venues without having to explicitly store this information in the ABOX
+    \item It leverages the explicit relationship between papers and proceedings through \texttt{isPublishedIn}
+    \item It uses the connection between editions and their proceedings through \texttt{hasProceedings}
+    \item It demonstrates how we can trace a paper's publication path from author to venue through the conference hierarchy
 \end{itemize}
 
-These queries demonstrate how the explicit TBOX definition and reasoning capabilities of our knowledge graph enable us to:
+\subsubsection{Top Cited Authors}
+This query demonstrates how we can perform complex aggregations and rankings using the knowledge graph:
+
+\begin{verbatim}
+PREFIX pub: <http://example.org/publication/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?authorName (COUNT(DISTINCT ?citingPaper) AS ?numCitations)
+WHERE {
+  ?citingPaper a pub:Paper ;
+               pub:cites ?citedPaper .
+  ?citedPaper pub:hasAuthor ?author .
+  ?author pub:hasName ?authorName .
+}
+GROUP BY ?authorName
+ORDER BY DESC(?numCitations)
+LIMIT 10
+\end{verbatim}
+
+This query showcases several benefits of our TBOX design:
 \begin{itemize}
-    \item Find information that is not explicitly stored but can be inferred through the ontology structure
-    \item Understand and query the relationships between different entities in a semantic way
-    \item Take advantage of the hierarchical structure of our ontology to find related information
+    \item It uses the \texttt{cites} relationship to track paper citations
+    \item It leverages the \texttt{hasAuthor} relationship to connect papers with their authors
+    \item It demonstrates how we can perform complex aggregations (counting citations) and rankings (top 10 authors)
+    \item The use of \texttt{DISTINCT} ensures we don't count multiple citations of the same paper
+\end{itemize}
+
+These queries demonstrate how our TBOX design enables:
+\begin{itemize}
+    \item Complex relationship traversal across multiple entities
+    \item Aggregation and ranking operations
+    \item Efficient querying of hierarchical relationships
+    \item Clear separation between different types of entities (papers, authors, venues, etc.)
 \end{itemize}
 
 \section{Knowledge Graph Embeddings}
-\subsection{Importing the Data}
-[To be filled with data selection and import details]
 
-\subsection{Getting Familiar with KGEs}
-[To be filled with KGE model exploration and analysis]
+\subsection{Importing the Data}
+
+For the creation of Knowledge Graph Embeddings, we carefully selected a subset of the triples from our knowledge graph that capture the most important structural and semantic relationships. The selected data focuses on the core entities and their relationships, which are essential for learning meaningful embeddings.
+
+The selected triples include the following key relationships:
+
+\begin{itemize}
+    \item \textbf{Publication Relationships}:
+    \begin{itemize}
+        \item Papers to Proceedings/Volumes through \texttt{isPublishedIn}
+        \item Papers to Authors through \texttt{hasAuthor}
+        \item Papers to Corresponding Authors through \texttt{hasCorrespondingAuthor}
+        \item Papers to Topics through \texttt{hasKeyword}
+    \end{itemize}
+    
+    \item \textbf{Citation Network}:
+    \begin{itemize}
+        \item Papers to Papers through \texttt{cites}, capturing the citation network
+    \end{itemize}
+    
+    \item \textbf{Event Structure}:
+    \begin{itemize}
+        \item Conferences/Workshops to Editions through \texttt{hasEdition}
+        \item Editions to Proceedings through \texttt{hasProceedings}
+        \item Editions to Venues through \texttt{hasVenue}
+    \end{itemize}
+    
+    \item \textbf{Journal Structure}:
+    \begin{itemize}
+        \item Journals to Volumes through \texttt{hasVolume}
+    \end{itemize}
+    
+    \item \textbf{Review Process}:
+    \begin{itemize}
+        \item Papers to Reviews through \texttt{hasReview}
+        \item Reviews to Reviewers through \texttt{isAssignedBy}
+    \end{itemize}
+\end{itemize}
+
+This selection was made with the following considerations:
+\begin{itemize}
+    \item Focus on structural relationships that define the core topology of the knowledge graph
+    \item Inclusion of both hierarchical (e.g., Conference-Edition-Proceedings) and network (e.g., citations) relationships
+    \item Coverage of all major entity types (Papers, Authors, Venues, Topics, etc.)
+    \item Exclusion of detailed attributes (like review text or paper abstracts) that would not benefit from embedding
+\end{itemize}
+
+The selected triples are stored in two TSV files:
+\begin{itemize}
+    \item \texttt{triples\_kge.tsv}: Contains the triples used for training the KGE models
+    \item \texttt{triples\_exploitation.tsv}: Contains additional triples that can be used for downstream tasks
+\end{itemize}
+
+This data selection provides a rich foundation for learning embeddings that can capture:
+\begin{itemize}
+    \item The hierarchical structure of academic publications
+    \item The citation network between papers
+    \item The relationships between authors and their publications
+    \item The topical connections between papers
+\end{itemize}
+
+\subsection{Getting familiar with KGEs}
+
+\subsubsection{The most basic model}
+
+For this task, we used the paper with ID \texttt{Paper7e1f6e63f4b06efc18d9d44e46005f79} as our example. We trained a TransE model using PyKEEN with the following configuration:
+\begin{itemize}
+    \item Embedding dimension: 50
+    \item Number of epochs: 20
+    \item Learning rate: 0.01
+    \item Training/validation/test split: 80/10/10 (stratified by relation type)
+    \item Negative sampling: 1 negative sample per positive triple
+    \item Loss function: Margin ranking loss with margin of 1.0
+\end{itemize}
+
+The model was trained on GPU (CUDA) to accelerate the learning process. The training data was loaded from \texttt{triples\_kge.tsv} and automatically split by PyKEEN to ensure a balanced distribution of relation types across the splits.
+
+To find the most likely cited paper according to TransE:
+\begin{enumerate}
+    \item Get the paper's embedding vector $h$
+    \item Get the citation relation's embedding vector $r$
+    \item Calculate expected cited paper embedding as $h + r$
+\end{enumerate}
+
+To find the most likely author of a paper:
+\begin{enumerate}
+    \item Get the paper's embedding vector $h$
+    \item Get the author relation's embedding vector $r$
+    \item Calculate expected author embedding as $h - r$
+\end{enumerate}
+
+We implemented these calculations in Python using PyKEEN and PyTorch. The code finds the closest entity to the expected embedding vector using Euclidean distance. For our example paper, the model predicted:
+\begin{itemize}
+    \item Most likely cited paper: \texttt{Paperd114e1de831cc6bc29233d024f137d48}
+    \item Most likely author: \texttt{Author67936dfd5e69470e080a42e83032e605}
+\end{itemize}
+
+It is worth noting that the predicted paper and author are correct types only because we added explicit type filtering to the model. If we did not add this filtering, the model would have predicted a Review and an Author, respectively, which are incorrect types. However, these entity type constraints are substantiated by previous literature: [TODO: add references, "Improving Knowledge Graph Embeddings with Inferred Entity Types"]
+
+\subsubsection{Improving TransE}
+
+The TransE model, while simple and interpretable, has significant limitations when dealing with complex relationships. Let's analyze these limitations and explore potential solutions.
+
+\paragraph{One-to-Many/Many-to-One Relationships}
+Consider a knowledge graph with the following triples:
+\begin{itemize}
+    \item (Author1, writes, Paper1)
+    \item (Author2, writes, Paper1)
+    \item (Author1, writes, Paper2)
+\end{itemize}
+
+In TransE, the model tries to satisfy $h + r \approx t$ for each triple. For the first two triples, this means:
+\begin{align*}
+    \text{Author1} + \text{writes} \approx \text{Paper1} \\
+    \text{Author2} + \text{writes} \approx \text{Paper1}
+\end{align*}
+
+This leads to $\text{Author1} \approx \text{Author2}$, which is incorrect since they are different authors. Similarly, for the first and third triples:
+\begin{align*}
+    \text{Author1} + \text{writes} \approx \text{Paper1} \\
+    \text{Author1} + \text{writes} \approx \text{Paper2}
+\end{align*}
+
+This forces $\text{Paper1} \approx \text{Paper2}$, which is also incorrect. These contradictions demonstrate TransE's inability to properly model one-to-many and many-to-one relationships.
+
+\paragraph{Solving One-to-Many Issues}
+TransH was specifically designed to address this limitation. Instead of translating entities in the same space, TransH projects entities onto relation-specific hyperplanes. This allows the same entity to have different projections for different relationships, effectively solving the contradiction we saw with TransE. For example, Author1 and Author2 can have different projections on the "writes" hyperplane while maintaining their distinct identities in the original space.
+
+\paragraph{Symmetric Relationships}
+Consider a symmetric relationship like "collaboratesWith" between authors. In TransE, for the triples:
+\begin{itemize}
+    \item (Author1, collaboratesWith, Author2)
+    \item (Author2, collaboratesWith, Author1)
+\end{itemize}
+
+The model would try to satisfy:
+\begin{align*}
+    \text{Author1} + \text{collaboratesWith} \approx \text{Author2} \\
+    \text{Author2} + \text{collaboratesWith} \approx \text{Author1}
+\end{align*}
+
+This would require $\text{collaboratesWith} \approx \text{Author2} - \text{Author1}$ and $\text{collaboratesWith} \approx \text{Author1} - \text{Author2}$, which can only be satisfied if $\text{collaboratesWith} \approx \vec{0}$ (the zero vector). This is a degenerate solution that doesn't capture the true meaning of the relationship. The scores for both triples should indeed be the same since collaboration is symmetric, but TransE cannot properly model this symmetry without resorting to this trivial solution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/transe_symmetry.pdf}
+    \caption{Visualization of TransE's symmetry problem. The arrows show how TransE tries to model the symmetric "collaboratesWith" relationship between two authors. For the relationship to be symmetric, the relation vector would need to be the zero vector, which is a degenerate solution that doesn't capture the true meaning of collaboration.}
+    \label{fig:transe_symmetry}
+\end{figure}
+
+As shown in Figure \ref{fig:transe_symmetry}, when trying to model a symmetric relationship like "collaboratesWith" between two authors, TransE faces a fundamental problem. The model needs to find a relation vector that, when added to Author1, points to Author2, and when added to Author2, points to Author1. This is only possible if the relation vector is the zero vector, which is a degenerate solution that doesn't capture any meaningful information about the relationship. This is why TransE struggles with symmetric relationships unless it resorts to this trivial solution.
+
+\paragraph{RotatE's Solution to Symmetry}
+RotatE solves the symmetry problem by using complex numbers and rotation in the complex plane. Instead of adding vectors like TransE, RotatE multiplies complex numbers, where each entity and relation is represented as a complex number. For a symmetric relationship, RotatE can achieve symmetry by using a rotation of 180 degrees ($\pi$ radians).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/rotate_symmetry.pdf}
+    \caption{Visualization of how RotatE handles symmetric relationships. The dashed arcs show the 180-degree rotations that transform Author1 to Author2 and vice versa. The relation $r = e^{i\pi}$ (rotation by $\pi$ radians) achieves perfect symmetry.}
+    \label{fig:rotate_symmetry}
+\end{figure}
+
+As shown in Figure \ref{fig:rotate_symmetry}, RotatE can model symmetric relationships by using a rotation of $\pi$ radians. When we rotate Author1 by $\pi$ radians, we get Author2, and when we rotate Author2 by $\pi$ radians, we get Author1. This is achieved by setting the relation vector $r = e^{i\pi}$, which represents a 180-degree rotation. This solution is not degenerate and properly captures the symmetric nature of the relationship.
+
+\paragraph{DistMult's Natural Symmetry}
+DistMult is another model that naturally handles symmetric relationships without requiring any special considerations. Unlike TransE and RotatE, which use vector addition and rotation respectively, DistMult uses a simple element-wise multiplication (Hadamard product) between entity and relation vectors. The scoring function for a triple $(h, r, t)$ is:
+
+\begin{align*}
+    f(h, r, t) = \sum_{i=1}^d h_i \cdot r_i \cdot t_i
+\end{align*}
+
+where $h_i$, $r_i$, and $t_i$ are the $i$-th components of the head entity, relation, and tail entity vectors respectively. This formulation naturally handles symmetric relationships because the scoring function is symmetric with respect to the head and tail entities when the relation vector has symmetric components. For example, if we have a symmetric relationship like "collaboratesWith", the relation vector will have components that are symmetric around zero, making the score the same regardless of the order of the entities.
+
+This property makes DistMult particularly well-suited for modeling symmetric relationships in knowledge graphs, as it doesn't require any special handling or constraints to achieve symmetry. However, this same property can be a limitation when modeling asymmetric relationships, as the model cannot distinguish between different directions of the same relation.
 
 \subsection{Training KGEs}
 [To be filled with KGE training experiments and results]

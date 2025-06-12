@@ -34,9 +34,22 @@
 \newlabel{fig:keyword_dist}{{6}{6}{Top 20 keywords in the papers. The horizontal bar chart shows the most frequently occurring keywords, indicating the main research topics in the knowledge graph}{figure.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Assumptions and Design Decisions}{7}{subsection.2.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.7}Querying the Ontology}{7}{subsection.2.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Knowledge Graph Embeddings}{7}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Importing the Data}{7}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Getting Familiar with KGEs}{7}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Training KGEs}{7}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Exploiting KGEs}{7}{subsection.3.4}\protected@file@percent }
-\gdef \@abspage@last{7}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.7.1}Author's Publication History with Venue Details}{7}{subsubsection.2.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.7.2}Top Cited Authors}{7}{subsubsection.2.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Knowledge Graph Embeddings}{8}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Importing the Data}{8}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Getting familiar with KGEs}{9}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}The most basic model}{9}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Improving TransE}{10}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{One-to-Many/Many-to-One Relationships}{10}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Solving One-to-Many Issues}{10}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Symmetric Relationships}{10}{section*.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Visualization of TransE's symmetry problem. The arrows show how TransE tries to model the symmetric "collaboratesWith" relationship between two authors. For the relationship to be symmetric, the relation vector would need to be the zero vector, which is a degenerate solution that doesn't capture the true meaning of collaboration.}}{11}{figure.7}\protected@file@percent }
+\newlabel{fig:transe_symmetry}{{7}{11}{Visualization of TransE's symmetry problem. The arrows show how TransE tries to model the symmetric "collaboratesWith" relationship between two authors. For the relationship to be symmetric, the relation vector would need to be the zero vector, which is a degenerate solution that doesn't capture the true meaning of collaboration}{figure.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{RotatE's Solution to Symmetry}{11}{section*.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Visualization of how RotatE handles symmetric relationships. The dashed arcs show the 180-degree rotations that transform Author1 to Author2 and vice versa. The relation $r = e^{i\pi }$ (rotation by $\pi $ radians) achieves perfect symmetry.}}{12}{figure.8}\protected@file@percent }
+\newlabel{fig:rotate_symmetry}{{8}{12}{Visualization of how RotatE handles symmetric relationships. The dashed arcs show the 180-degree rotations that transform Author1 to Author2 and vice versa. The relation $r = e^{i\pi }$ (rotation by $\pi $ radians) achieves perfect symmetry}{figure.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{DistMult's Natural Symmetry}{12}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Training KGEs}{12}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Exploiting KGEs}{12}{subsection.3.4}\protected@file@percent }
+\gdef \@abspage@last{12}

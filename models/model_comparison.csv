@@ -1,0 +1,5 @@
+Model,MRR,Hits@1,Hits@3,Hits@10
+TransE,0,0,0,0
+TransH,0,0,0,0
+RotatE,0,0,0,0
+DistMult,0,0,0,0
