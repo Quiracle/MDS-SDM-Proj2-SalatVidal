@@ -3,6 +3,7 @@ from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, RDFS, XSD
 import hashlib
 from datetime import datetime
+from utils import hash_id
 
 # Create namespace
 PUB = Namespace("http://example.org/publication/")
@@ -13,7 +14,7 @@ def create_uri(base, identifier):
         raise ValueError(f"Cannot create URI for NaN identifier in {base}")
     if isinstance(identifier, float):
         identifier = str(int(identifier))
-    hash_object = hashlib.md5(str(identifier).encode())
+    hash_object = hash_id(identifier)
     return URIRef(f"{base}{hash_object.hexdigest()}")
 
 def create_abox():

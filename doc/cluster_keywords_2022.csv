@@ -1,0 +1,15 @@
+year,cluster_id,keyword,count
+2022,0,big data,30
+2022,0,data storage,30
+2022,0,feature selection,4
+2022,0,bioinformatics,3
+2022,0,data management,2
+2022,0,data modeling,2
+2022,0,machine learning,1
+2022,1,data storage,14
+2022,1,feature selection,8
+2022,2,data storage,10
+2022,2,big data,2
+2022,2,bioinformatics,1
+2022,3,bioinformatics,10
+2022,4,bioinformatics,37

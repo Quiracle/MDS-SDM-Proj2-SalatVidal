@@ -1,0 +1,144 @@
+year,cluster_id,keyword,count
+2015,0,indexing,21
+2015,1,data processing,9
+2015,1,data querying,5
+2015,2,indexing,10
+2015,2,data querying,10
+2015,2,machine learning,1
+2015,2,big data,1
+2015,2,data processing,1
+2015,3,data querying,7
+2015,3,indexing,4
+2015,3,machine learning,2
+2015,4,data processing,10
+2015,4,machine learning,5
+2015,4,big data,2
+2016,0,data management,50
+2016,1,machine learning,55
+2016,2,bioinformatics,27
+2016,3,data querying,6
+2016,4,machine learning,12
+2016,4,data querying,8
+2016,4,indexing,7
+2016,4,data modeling,6
+2016,4,data processing,4
+2016,4,data management,3
+2016,4,big data,2
+2016,4,bioinformatics,1
+2017,0,feature selection,3
+2017,0,data querying,2
+2017,1,data modeling,6
+2017,2,big data,7
+2017,2,machine learning,6
+2017,2,data querying,4
+2017,3,bioinformatics,8
+2017,4,data modeling,4
+2017,4,bioinformatics,2
+2017,4,feature selection,1
+2017,4,artificial intelligence,1
+2017,4,data querying,1
+2018,0,data querying,2
+2018,0,data storage,2
+2018,0,artificial intelligence,1
+2018,0,machine learning,1
+2018,1,data storage,20
+2018,2,bioinformatics,2
+2018,2,data modeling,1
+2018,3,data processing,6
+2018,3,data querying,3
+2018,3,data modeling,2
+2018,4,data processing,3
+2018,4,artificial intelligence,1
+2018,4,data querying,1
+2019,0,data processing,29
+2019,0,indexing,2
+2019,0,artificial intelligence,2
+2019,0,data modeling,2
+2019,0,machine learning,1
+2019,1,data processing,180
+2019,2,data management,7
+2019,2,machine learning,4
+2019,2,data modeling,3
+2019,2,big data,3
+2019,2,indexing,1
+2019,3,data processing,6
+2019,3,data modeling,5
+2019,3,data querying,4
+2019,3,data storage,3
+2019,3,artificial intelligence,1
+2019,4,artificial intelligence,10
+2019,4,indexing,8
+2019,4,data processing,3
+2020,0,data management,9
+2020,0,feature selection,5
+2020,0,data processing,2
+2020,0,big data,1
+2020,0,data storage,1
+2020,0,bioinformatics,1
+2020,1,data management,18
+2020,2,data storage,14
+2020,2,machine learning,8
+2020,2,bioinformatics,8
+2020,2,data processing,7
+2020,2,data management,6
+2020,3,data processing,11
+2020,3,data modeling,10
+2020,3,big data,8
+2020,3,data management,5
+2020,3,data storage,4
+2020,4,data management,8
+2020,4,data storage,5
+2020,4,data processing,3
+2021,0,data management,15
+2021,0,data modeling,15
+2021,0,feature selection,1
+2021,0,data processing,1
+2021,0,data storage,1
+2021,1,feature selection,14
+2021,1,data processing,14
+2021,1,data storage,5
+2021,1,machine learning,2
+2021,1,data management,1
+2021,2,data management,19
+2021,2,big data,6
+2021,2,bioinformatics,5
+2021,2,data processing,3
+2021,2,machine learning,1
+2021,3,data storage,27
+2021,3,data modeling,6
+2021,3,machine learning,5
+2021,3,data management,4
+2021,4,big data,11
+2021,4,feature selection,7
+2021,4,bioinformatics,6
+2021,4,data storage,2
+2021,4,machine learning,1
+2021,4,data management,1
+2022,0,big data,30
+2022,0,data storage,30
+2022,0,feature selection,4
+2022,0,bioinformatics,3
+2022,0,data management,2
+2022,0,data modeling,2
+2022,0,machine learning,1
+2022,1,data storage,14
+2022,1,feature selection,8
+2022,2,data storage,10
+2022,2,big data,2
+2022,2,bioinformatics,1
+2022,3,bioinformatics,10
+2022,4,bioinformatics,37
+2023,0,artificial intelligence,26
+2023,0,bioinformatics,6
+2023,0,data management,5
+2023,0,feature selection,3
+2023,0,data querying,2
+2023,1,artificial intelligence,28
+2023,2,artificial intelligence,14
+2023,2,bioinformatics,13
+2023,2,data storage,5
+2023,2,feature selection,4
+2023,3,feature selection,7
+2023,3,artificial intelligence,2
+2023,4,artificial intelligence,12
+2023,4,data querying,7

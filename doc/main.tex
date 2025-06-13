@@ -11,7 +11,9 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
-\usepackage{booktabs}
+\usepackage{pgfplotstable}
+\usepackage{booktabs} % for prettier tables
+
 
 \title{Knowledge Graphs Project: Research Publication Domain}
 \author{Jonàs Salat, Albert Vidal}
@@ -113,7 +115,7 @@ The following inverse relationships are defined:
 \subsection{ABOX Creation}
 \label{sec:abox}
 
-The ABOX (Assertional Box) of our knowledge graph was created by processing and transforming the provided CSV datasets into RDF triples. The implementation handles the complex relationships between different entities while ensuring data integrity and consistency.
+The ABOX (Assertional Box) of our knowledge graph was created by processing and transforming the CSV datasets from the previous part of this course into RDF triples. The implementation handles the complex relationships between different entities while ensuring data integrity and consistency.
 
 \subsection{Implementation Details}
 
@@ -497,7 +499,71 @@ The best-performing model was \textbf{TransH}, which achieved an MRR of 0.151 an
 \paragraph{Why are the scores low?}
 Overall, absolute performance scores across all models were modest. This is likely due to the limited size and sparsity of the knowledge graph (4636 triples across 2943 entities and 12 relations), which restricts the models’ ability to generalize. Additionally, the skewed distribution of relations—where some are highly frequent (e.g., \texttt{hasAuthor}) and others sparse—makes learning consistent embeddings challenging. The lack of type constraints or schema-level information may also contribute to the difficulty of distinguishing between semantically plausible and implausible triples.
 
-\subsection{Exploiting KGEs}
-[To be filled with KGE application details and results]
+\subsection{Exploitation analysis}
+
+To explore the temporal dynamics of author behavior in the research graph, we applied clustering over the learned entity embeddings of authors, split by year. Specifically, we trained a KMeans model with $k=5$ on the subset of author embeddings corresponding to each year from 2015 to 2023. This allowed us to observe how clusters of semantically similar authors (based on their roles and relations in the graph) evolve over time.
+
+Figure~\ref{fig:cluster_evolution} shows the size of each cluster across the analyzed years. Several insights emerge from this visualization:
+
+\begin{itemize}
+    \item \textbf{Cluster Volatility:} Certain clusters, such as Cluster 1, show sharp fluctuations — peaking dramatically in 2019, then collapsing the following year. This could be tied to a high-impact event or conference held that year which attracted a temporary spike in activity from a subset of authors.
+    
+    \item \textbf{Stability and Growth:} Clusters like Cluster 0 and Cluster 4 demonstrate more stable growth trends, suggesting that they represent core, persistently active author groups.
+
+    \item \textbf{Rotational Membership:} The sizes of Clusters 2 and 3 fluctuate in a pattern suggesting that authors may be rotating between them over the years. This may reflect shifts in topical focus or institutional affiliation.
+
+    \item \textbf{Cluster Interpretation:} Given that embeddings encode structural information (e.g., coauthorship, venues, and citations), we hypothesize that clusters are driven by a combination of shared publication venues, coauthor networks, and thematic areas. Further inspection of cluster members supports this, showing that certain clusters are enriched for authors publishing in specific conferences or topics.
+\end{itemize}
+
+This analysis reveals that embedding-based clustering can capture real structural patterns and shifts in academic activity, opening the door to trend analysis, author recommendation, and community detection in scholarly knowledge graphs.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/cluster_distribution_over_time.pdf}
+    \caption{Author cluster size over time. Each line represents one cluster (from KMeans with $k=5$), and the vertical axis shows the number of authors in that cluster in a given year.}
+    \label{fig:cluster_evolution}
+\end{figure}
+
+\subsection{Keyword Analysis by Cluster}
+
+To further interpret the semantic coherence of the discovered author clusters, we extracted the most frequent keywords used by each cluster in each year. For this, we associated authors with their published papers, collected the \texttt{keywords} field from those papers, and aggregated them per cluster and year. The top terms per cluster were then counted to identify dominant research themes.
+
+Table~\ref{tab:cluster_keywords} summarizes a subset of this analysis. The complete results are available in the supplementary CSV file (\texttt{doc/cluster\_keywords\_by\_year.csv}).
+
+\begin{table}[H]
+\centering
+\scriptsize
+\pgfplotstabletypeset[
+    col sep=comma,
+    string type,
+    columns/year/.style={column name=Year, column type={c}},
+    columns/cluster_id/.style={column name=Cluster, column type={c}},
+    columns/keyword/.style={column name=Keyword, column type={c}},
+    columns/count/.style={column name=Count, column type={c}},
+    every head row/.style={
+        before row=\toprule, after row=\midrule
+    },
+    every last row/.style={after row=\bottomrule}
+]{doc/cluster_keywords_2022.csv}
+\caption{Top keywords per cluster and year extracted from author clusters over time.}
+\label{tab:cluster_keywords_csv}
+\end{table}
+
+\paragraph{Observations:}
+
+\begin{itemize}
+    \item \textbf{Persistent Topics:} Clusters focused on \textit{data processing}, \textit{data storage}, and \textit{machine learning} appear repeatedly across multiple years, indicating sustained research interest.
+    
+    \item \textbf{Emerging Trends:} \textit{Artificial intelligence} appears as a dominant term only after 2019, reflecting its recent rise in prominence within the community.
+
+    \item \textbf{Shifting Focus:} Cluster 1's transition from \textit{data processing} in 2019 to \textit{artificial intelligence} by 2023 may suggest topic drift among a subset of authors.
+
+    \item \textbf{Specialized Clusters:} Cluster 2 consistently shows strong signals for \textit{bioinformatics}, implying a domain-specific author group.
+
+    \item \textbf{Consolidation:} In 2022, both \textit{big data} and \textit{data storage} peaked together in Cluster 0, suggesting a convergence of themes under a unified group.
+\end{itemize}
+
+This temporal keyword distribution complements the clustering results, confirming that clusters are not only structurally coherent (via embeddings), but also semantically meaningful and traceable over time.
+
 
 \end{document} 

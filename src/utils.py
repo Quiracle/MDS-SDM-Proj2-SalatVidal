@@ -8,6 +8,7 @@ from sklearn.model_selection import KFold
 from pykeen.pipeline import pipeline
 from pykeen.triples import TriplesFactory
 from pykeen.losses import MarginRankingLoss
+import hashlib
 
 # Suppress PyKEEN and torch logs
 warnings.filterwarnings("ignore")
@@ -175,3 +176,21 @@ def get_default_hyperparams(model_name):
         return params
     else:
         raise ValueError(f"Unknown model name: {model_name}")
+
+
+import hashlib
+
+def hash_id(identifier):
+    """
+    Hashes an ID using MD5 after safely converting to a clean string.
+
+    Handles common float representations like '123.0' and ensures consistent output.
+    """
+    try:
+        # Convert float-like input (e.g., 145642373.0) to clean int string ('145642373')
+        clean_str = str(int(float(identifier)))
+    except Exception:
+        # Fallback to safe string strip
+        clean_str = str(identifier).strip()
+
+    return hashlib.md5(clean_str.encode()).hexdigest()
