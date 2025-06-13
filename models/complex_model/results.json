@@ -1,0 +1,26 @@
+{
+  "best_parameters": {
+    "embedding_dim": 200,
+    "learning_rate": 0.001,
+    "batch_size": 128,
+    "num_negatives": 5,
+    "early_stopping": true,
+    "patience": 10,
+    "relative_delta": 0.002,
+    "num_epochs": 300,
+    "model_kwargs": {
+      "regularizer": "Lp",
+      "regularizer_kwargs": {
+        "p": 3,
+        "weight": 0.01
+      }
+    },
+    "regularizer_weight": 0.1
+  },
+  "metrics": {
+    "mean_reciprocal_rank": 0.004433123394846916,
+    "hits_at_1": 0.0005387931034482759,
+    "hits_at_3": 0.0026939655172413795,
+    "hits_at_10": 0.007543103448275862
+  }
+}

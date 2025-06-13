@@ -11,6 +11,7 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{booktabs}
 
 \title{Knowledge Graphs Project: Research Publication Domain}
 \author{Jonàs Salat, Albert Vidal}
@@ -445,7 +446,56 @@ where $h_i$, $r_i$, and $t_i$ are the $i$-th components of the head entity, rela
 This property makes DistMult particularly well-suited for modeling symmetric relationships in knowledge graphs, as it doesn't require any special handling or constraints to achieve symmetry. However, this same property can be a limitation when modeling asymmetric relationships, as the model cannot distinguish between different directions of the same relation.
 
 \subsection{Training KGEs}
-[To be filled with KGE training experiments and results]
+
+We implemented and evaluated five different Knowledge Graph Embedding (KGE) models: TransE, TransH, RotatE, DistMult, and ComplEx. The training pipeline was implemented in Python using the PyKEEN library, with support for inverse triples, cross-validation, and hyperparameter optimization.
+
+\subsubsection{Training Pipeline}
+
+The training process follows these steps:
+
+\begin{enumerate}
+    \item \textbf{Data Preparation}: The RDF triples were preprocessed into subject-predicate-object format and used to create labeled triples for the embedding models. The dataset was split using 3-fold cross-validation to ensure a more robust performance estimate.
+    
+    \item \textbf{Hyperparameter Optimization}: For each model, we performed a grid search over the following hyperparameters:
+    \begin{itemize}
+        \item Embedding dimension: [50, 100, 200]
+        \item Number of negative samples per positive triple: [1, 3, 5]
+        \item Learning rate: [0.001, 0.0005, 0.0001]
+        \item Batch size: [64, 128, 256]
+    \end{itemize}
+    
+    \item \textbf{Model Training}: Models were trained using the Adam optimizer, with early stopping enabled (patience = 5, relative\_delta = 0.002) to prevent overfitting. All experiments were conducted using CPU due to hardware constraints.
+
+    \item \textbf{Evaluation}: Each trained model was evaluated on the test fold using the following ranking-based metrics:
+    \begin{itemize}
+        \item Mean Reciprocal Rank (MRR)
+        \item Hits@1: Proportion of true triples ranked first
+        \item Hits@3: Proportion of true triples in the top 3 predictions
+        \item Hits@10: Proportion of true triples in the top 10 predictions
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Results and Interpretation}
+
+\begin{table}[H]
+    \centering
+    \input{tab/model_comparison.csv}
+    \caption{Performance comparison of KGE models on our knowledge graph. Higher values indicate better ranking performance.}
+    \label{tab:model_comparison}
+\end{table}
+
+The best-performing model was \textbf{TransH}, which achieved an MRR of 0.151 and Hits@10 of 0.207. This result highlights TransH’s ability to better model diverse and complex relation types by introducing a relation-specific hyperplane for entity projections. The inclusion of inverse triples also significantly improved the performance of all models by doubling the observed relation directions.
+
+\textbf{DistMult} performed similarly well, particularly in Hits@1 (11.6\%), despite its known limitation in handling asymmetric relations. This suggests that a substantial portion of the graph may involve symmetric or quasi-symmetric predicates, such as \texttt{hasKeyword} or \texttt{hasReview}.
+
+\textbf{RotatE} showed moderate performance, indicating some ability to capture more complex relational patterns such as symmetry and inversion. However, it was outperformed by simpler bilinear and projection-based models, possibly due to underfitting or suboptimal hyperparameters in this setting.
+
+\textbf{TransE}, as expected, yielded the lowest results (MRR: 0.025), as its simplistic translational model struggles with multi-relational structures and many-to-many relations, which are common in academic metadata (e.g., multiple authors per paper).
+
+\textbf{ComplEx} was tested with and without inverse triples, but even with inverses, it failed to outperform other models. This could be attributed to several factors: its sensitivity to initialization, potential mismatch between model capacity and the dataset size (relatively small at $\sim$4600 triples), or insufficient tuning of regularization parameters.
+
+\paragraph{Why are the scores low?}
+Overall, absolute performance scores across all models were modest. This is likely due to the limited size and sparsity of the knowledge graph (4636 triples across 2943 entities and 12 relations), which restricts the models’ ability to generalize. Additionally, the skewed distribution of relations—where some are highly frequent (e.g., \texttt{hasAuthor}) and others sparse—makes learning consistent embeddings challenging. The lack of type constraints or schema-level information may also contribute to the difficulty of distinguishing between semantically plausible and implausible triples.
 
 \subsection{Exploiting KGEs}
 [To be filled with KGE application details and results]

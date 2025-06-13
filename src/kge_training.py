@@ -1,9 +1,14 @@
 import os
 import json
 import pandas as pd
-from utils import train_model, cross_validate_model, get_default_hyperparams
-import itertools
 import torch
+import itertools
+
+from utils import (
+    train_model,
+    cross_validate_model,
+    get_default_hyperparams
+)
 
 def train_and_evaluate_models(triples_path, output_dir, model_names=None):
     """
@@ -17,10 +22,8 @@ def train_and_evaluate_models(triples_path, output_dir, model_names=None):
     if model_names is None:
         model_names = ['TransE', 'TransH', 'RotatE', 'DistMult']
     
-    # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
-    # Define hyperparameter grid
     param_grid = {
         'embedding_dim': [50, 100, 200],
         'num_negatives': [1, 3, 5],
@@ -28,119 +31,95 @@ def train_and_evaluate_models(triples_path, output_dir, model_names=None):
         'batch_size': [64, 128, 256],
         'early_stopping': [True],
         'patience': [5],
-        'relative_delta': [0.002]
+        'relative_delta': [0.002],
+        'num_epochs': [100]
     }
     
-    # Store results
     results = {}
     
-    # Train and evaluate each model
     for model_name in model_names:
-        print(f"\nTraining {model_name}...")
+        print(f"\n🚀 Training {model_name}...")
         
-        # Get default hyperparameters for this model
         default_params = get_default_hyperparams(model_name)
-        
-        # Perform grid search with cross-validation
         best_score = float('-inf')
         best_params = None
         
-        # Generate all parameter combinations
-        param_combinations = [dict(zip(param_grid.keys(), v)) 
-                            for v in itertools.product(*param_grid.values())]
-        
-        for params in param_combinations:
-            # Update with default parameters
+        param_combinations = [dict(zip(param_grid.keys(), v))
+                              for v in itertools.product(*param_grid.values())]
+
+        for i, params in enumerate(param_combinations, 1):
             params.update(default_params)
+            print(f"\n🔁 [{i}/{len(param_combinations)}] Testing parameters: {params}")
             
-            print(f"Testing parameters: {params}")
-            
-            # Perform cross-validation
             metrics = cross_validate_model(
                 triples_path=triples_path,
                 model_name=model_name,
                 hyperparams=params,
-                n_splits=3  # Use 3-fold CV for faster training
+                n_splits=3
             )
-            
-            # Use MRR as the optimization metric
+
+            print("📊 Metrics:")
+            for k, v in metrics.items():
+                print(f"  {k}: {v:.4f}")
+
             score = metrics.get('mean_reciprocal_rank', 0)
-            
             if score > best_score:
                 best_score = score
                 best_params = params
-        
-        # Train final model with best parameters
-        print(f"\nTraining final {model_name} model with best parameters...")
+
+        print(f"\n🏁 Training final {model_name} model with best parameters...")
         model, entity_to_id, relation_to_id, test_triples, final_metrics = train_model(
             triples_path=triples_path,
             model_name=model_name,
             hyperparams=best_params
         )
         
-        # Save model and results
         model_dir = os.path.join(output_dir, f"{model_name.lower()}_model")
         os.makedirs(model_dir, exist_ok=True)
         
-        # Save model and mappings
         torch.save(model, os.path.join(model_dir, "trained_model.pkl"))
         
-        # Save entity mappings
         entity_df = pd.DataFrame({
             'id': list(entity_to_id.values()),
             'entity': list(entity_to_id.keys())
         })
-        entity_df.to_csv(os.path.join(model_dir, "entity_to_id.tsv.gz"), 
-                        sep='\t', index=False, compression='gzip')
+        entity_df.to_csv(os.path.join(model_dir, "entity_to_id.tsv.gz"), sep='\t', index=False, compression='gzip')
         
-        # Save relation mappings
         relation_df = pd.DataFrame({
             'id': list(relation_to_id.values()),
             'relation': list(relation_to_id.keys())
         })
-        relation_df.to_csv(os.path.join(model_dir, "relation_to_id.tsv.gz"), 
-                          sep='\t', index=False, compression='gzip')
+        relation_df.to_csv(os.path.join(model_dir, "relation_to_id.tsv.gz"), sep='\t', index=False, compression='gzip')
         
-        # Store results
         results[model_name] = {
             'best_parameters': best_params,
             'metrics': final_metrics
         }
-        
-        # Save results to JSON
+
         with open(os.path.join(model_dir, 'results.json'), 'w') as f:
-            json.dump({
-                'best_parameters': best_params,
-                'metrics': final_metrics
-            }, f, indent=2)
-    
-    # Create summary table
+            json.dump(results[model_name], f, indent=2)
+
     summary_data = []
     for model_name, result in results.items():
-        metrics = result['metrics']
+        m = result['metrics']
         summary_data.append({
             'Model': model_name,
-            'MRR': metrics.get('mean_reciprocal_rank', 0),
-            'Hits@1': metrics.get('hits_at_1', 0),
-            'Hits@3': metrics.get('hits_at_3', 0),
-            'Hits@10': metrics.get('hits_at_10', 0)
+            'MRR': m.get('mean_reciprocal_rank', 0),
+            'Hits@1': m.get('hits_at_1', 0),
+            'Hits@3': m.get('hits_at_3', 0),
+            'Hits@10': m.get('hits_at_10', 0)
         })
     
-    # Save summary table
     summary_df = pd.DataFrame(summary_data)
     summary_df.to_csv(os.path.join(output_dir, 'model_comparison.csv'), index=False)
     
-    # Print summary
-    print("\nModel Comparison Summary:")
+    print("\n📊 Model Comparison Summary:")
     print(summary_df.to_string(index=False))
 
 def main():
-    # Set paths
     triples_path = "triples_kge.tsv"
     output_dir = "models"
-    
-    # Train and evaluate models
     train_and_evaluate_models(triples_path, output_dir)
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -12,9 +12,14 @@ Volumes: 57
 Reviews: 660
 
 Relationship Counts:
-Paper-Author: 1458
-Citations: 661
-Reviews: 660
+hasAuthor: 1458
+cites: 661
+hasReview: 660
+hasEdition: 178
+hasConference: 23
+hasWorkshop: 68
+hasJournal: 44
+hasVolume: 57
 
 Venue Distribution:
 workshop: 129

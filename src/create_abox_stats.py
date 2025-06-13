@@ -54,12 +54,21 @@ def create_entity_distribution_plot(data):
     return entities
 
 def create_relationship_distribution_plot(data):
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 6))
+    
     relationships = {
-        'Paper-Author': len(data['paper_authors']),
-        'Citations': len(data['citations']),
-        'Reviews': len(data['reviews'])
+        'hasAuthor': len(data['paper_authors']),
+        'cites': len(data['citations']),
+        'hasReview': len(data['reviews']),
+        'hasEdition': len(data['editions']),
+        'hasConference': len(data['conferences']),
+        'hasWorkshop': len(data['workshops']),
+        'hasJournal': len(data['journals']),
+        'hasVolume': len(data['volumes'])
     }
+
+    # Optional: remove entries with zero count
+    relationships = {k: v for k, v in relationships.items() if v > 0}
     
     plt.bar(relationships.keys(), relationships.values())
     plt.title('Distribution of Relationships in the Knowledge Graph')
@@ -70,6 +79,7 @@ def create_relationship_distribution_plot(data):
     plt.close()
     
     return relationships
+
 
 def create_venue_distribution_plot(data):
     plt.figure(figsize=(10, 6))

@@ -1,0 +1,10 @@
+\begin{tabular}{lrrrr}
+\toprule
+Model & MRR & Hits@1 & Hits@3 & Hits@10 \\
+\midrule
+TransE & 0.024703 & 0.001078 & 0.024784 & 0.065733 \\
+TransH & 0.151463 & 0.119073 & 0.152478 & 0.206897 \\
+RotatE & 0.090050 & 0.069504 & 0.085129 & 0.121228 \\
+DistMult & 0.127049 & 0.115841 & 0.128772 & 0.143858 \\
+\bottomrule
+\end{tabular} 
