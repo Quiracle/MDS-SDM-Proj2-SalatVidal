@@ -13,7 +13,13 @@
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
 \usepackage{pgfplotstable}
 \usepackage{booktabs} % for prettier tables
+\usepackage{enumitem}
 
+% Configure itemize spacing
+\setlist[itemize]{noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt}
+\setlist[itemize,1]{label=$\bullet$}
+\setlist[itemize,2]{label=$\circ$}
+\setlist[itemize,3]{label=$\diamond$}
 
 \title{Knowledge Graphs Project: Research Publication Domain}
 \author{Jonàs Salat, Albert Vidal}
@@ -22,8 +28,13 @@
 
 \maketitle
 
-\section{Exploring DBpedia}
-[This section is for exploration purposes only, no deliverables required]
+\section{Introduction}
+
+This work presents the implementation of a knowledge graph pipeline following the specifications in the SDM Lab 2 assignment on Knowledge Graphs. The objective is to model and exploit research publication data through semantic technologies, starting from ontology design to the application of Knowledge Graph Embeddings (KGEs).
+
+The process begins with the setup and exploration of the DBpedia knowledge graph using GraphDB. Building on this, we construct a domain-specific ontology (TBOX) and instantiate it with data (ABOX) using the RDFLib Python library. Inference is used to enrich the graph and minimize redundancy.
+
+The final stages focus on generating and evaluating vector representations of entities and relations using PyKEEN. These embeddings are applied in machine learning tasks to demonstrate the practical value of semantic graph representations aside from traditional queries.
 
 \section{Ontology Creation}
 \subsection{TBOX Definition}
@@ -104,24 +115,16 @@ The TBOX defines various properties to establish relationships between classes:
     \item \textbf{hasReviewText}: Links a review to its text content (domain: Review, range: string)
 \end{itemize}
 
-\subsubsection{Inverse Properties}
-The following inverse relationships are defined:
-\begin{itemize}
-    \item \textbf{isPublishedIn} and \textbf{containsPaper}
-    \item \textbf{hasEdition} and \textbf{isEditionOf}
-    \item \textbf{hasVolume} and \textbf{isVolumeOf}
-\end{itemize}
-
 \subsection{ABOX Creation}
 \label{sec:abox}
 
-The ABOX (Assertional Box) of our knowledge graph was created by processing and transforming the CSV datasets from the previous part of this course into RDF triples. The implementation handles the complex relationships between different entities while ensuring data integrity and consistency.
+The ABOX of our knowledge graph was created by processing and transforming the CSV datasets from the previous part of this course into RDF triples. The implementation handles the relationships between different entities while ensuring data integrity and consistency.
 
 \subsection{Implementation Details}
 
-The ABOX creation process begins by loading all CSV files into pandas DataFrames for efficient data manipulation. Each entity type is processed sequentially, with careful attention to maintaining referential integrity between related entities. The implementation uses a custom URI generation function that creates deterministic, unique identifiers for each entity by hashing their primary keys.
+The ABOX creation process begins by loading all CSV files into pandas DataFrames for efficient data manipulation. The implementation uses a custom URI generation function that creates deterministic, unique identifiers for each entity by hashing their primary keys.
 
-For topics, we extract unique keywords from the papers dataset and create corresponding Topic instances. This approach ensures that each keyword appears only once in the knowledge graph, regardless of how many papers use it. Venues are similarly deduplicated, with each unique venue name creating a single Venue instance.
+For topics, we extract unique keywords from the papers dataset and create corresponding Topic instances. This approach ensures that each keyword appears only once in the knowledge graph, regardless of how many papers use it. Venues are also deduplicated, with each unique venue name creating a single Venue instance.
 
 The author creation process handles both required and optional attributes. While author ID and name are mandatory, email addresses are added only when available. This pattern of handling optional attributes is consistently applied throughout the implementation, ensuring that the knowledge graph only contains valid, non-null data.
 
@@ -129,19 +132,15 @@ Conference and Workshop instances are created as separate entities, each with th
 
 Edition instances are created with careful validation of their relationships to venues and events. The implementation ensures that each edition is properly associated with a valid venue and includes temporal information (year) when available. This temporal aspect is particularly important for maintaining the chronological integrity of the knowledge graph.
 
-Journal and Volume instances are created with a focus on maintaining the hierarchical relationship between them. Each volume is properly linked to its parent journal, and the implementation ensures that this relationship is bidirectional, with both the volume referencing its journal and the journal referencing its volumes.
-
-Paper instances form the core of the knowledge graph, with the most complex set of relationships. Each paper is linked to its authors, topics, and publication venue (either an edition or a volume). The implementation carefully handles the different types of publication venues (conference, workshop, or journal) and creates the appropriate relationships based on the venue type.
+Paper instances form the core of the knowledge graph, with the most complex set of relationships. Each paper is linked to its authors, topics, and publication venue (either an edition or a volume). The implementation carefully handles the different types of publication venues and creates the appropriate relationships based on the venue type.
 
 \subsection{Data Validation and Error Handling}
 
-The implementation includes robust data validation to ensure the integrity of the knowledge graph. NaN values are handled explicitly, with appropriate error messages when required fields are missing. The code validates foreign key relationships before creating them, ensuring that references between entities are always valid.
-
-For relationships between papers and their publication venues, the implementation performs additional validation to ensure that the referenced editions or volumes exist and are properly linked. This is particularly important for maintaining the semantic consistency of the knowledge graph.
+The implementation includes data validation to ensure the integrity of the knowledge graph. NaN values are handled explicitly, with appropriate error messages when required fields are missing. The code validates foreign key relationships before creating them, ensuring that references between entities are always valid.
 
 The citation relationships are validated to ensure that both the citing and cited papers exist in the knowledge graph. This prevents the creation of dangling references and maintains the integrity of the citation network.
 
-Review relationships are created with careful validation of both the paper and reviewer existence. The implementation also handles optional review text, adding it to the knowledge graph only when available.
+Review relationships are created with validation of both the paper and reviewer existence. The implementation also handles optional review text, adding it to the knowledge graph only when available.
 
 \subsection{Knowledge Graph Statistics}
 
@@ -163,7 +162,7 @@ The relationships between entities are shown in Figure \ref{fig:relationship_dis
     \label{fig:relationship_dist}
 \end{figure}
 
-The distribution of publication venues is shown in Figure \ref{fig:venue_dist}, which provides insight into the balance between different types of publication outlets in our dataset.
+The distribution of publication venues is shown in Figure \ref{fig:venue_dist}, which shows the balance between different types of publication outlets in our dataset.
 
 \begin{figure}[H]
     \centering
@@ -172,7 +171,7 @@ The distribution of publication venues is shown in Figure \ref{fig:venue_dist}, 
     \label{fig:venue_dist}
 \end{figure}
 
-The temporal distribution of papers is shown in Figure \ref{fig:year_dist}, which helps us understand the time span covered by our knowledge graph and any trends in publication frequency.
+The temporal distribution of papers is shown in Figure \ref{fig:year_dist}, which shows the time range covered by our knowledge graph and any trends in publication frequency.
 
 \begin{figure}[H]
     \centering
@@ -181,32 +180,23 @@ The temporal distribution of papers is shown in Figure \ref{fig:year_dist}, whic
     \label{fig:year_dist}
 \end{figure}
 
-Finally, Figure \ref{fig:keyword_dist} shows the most common keywords in the papers, providing insight into the main research topics covered in our knowledge graph.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{img/keyword_distribution.pdf}
-    \caption{Top 20 keywords in the papers. The horizontal bar chart shows the most frequently occurring keywords, indicating the main research topics in the knowledge graph.}
-    \label{fig:keyword_dist}
-\end{figure}
-
-These statistics provide valuable insights into the structure and content of our knowledge graph, helping us understand its scale, composition, and the relationships between different entities.
+These statistics show the structure and content of our knowledge graph, helping us understand its scale, composition, and the relative frequency of relationships between different entities.
 
 \subsection{Assumptions and Design Decisions}
 
-The implementation makes several key assumptions and design decisions to handle the complexity of the academic publication domain. First, we assume that each paper can be published in exactly one venue (either a conference/workshop edition or a journal volume). This assumption simplifies the relationship structure while maintaining the semantic accuracy of the knowledge graph.
+The implementation makes several assumptions and design decisions to handle the complexity of the domain. First, we assume that each paper can be published in exactly one venue (either a conference/workshop edition or a journal volume). This assumption simplifies the relationship structure while maintaining the semantic accuracy of the knowledge graph.
 
 For topics, we assume that keywords are case-sensitive and that whitespace should be preserved. This decision allows for more precise topic matching and querying. The implementation also assumes that keywords are comma-separated in the input data, with each keyword potentially containing internal spaces.
 
-The implementation assumes that author IDs are unique across the entire dataset, allowing for consistent author identification even when the same author appears in multiple papers. This assumption is crucial for maintaining the integrity of author-related relationships.
+The implementation assumes that author IDs are unique across the entire dataset, allowing for consistent author identification even when the same author appears in multiple papers. This assumption is important for maintaining the integrity of author-related relationships.
 
-For temporal data, we assume that years are represented as integers and are valid calendar years. This assumption allows for proper typing of temporal data in the knowledge graph and enables temporal reasoning.
+For temporal data, we assume that years are represented as integers and are valid calendar years, allowing for temporal analysis.
 
 The implementation assumes that each review is uniquely identified by the combination of paper ID and reviewer ID. This assumption allows for proper handling of multiple reviews for the same paper by different reviewers.
 
 Finally, the implementation assumes that the CSV files are properly formatted and that the data types of each column are consistent with their expected usage in the knowledge graph. This includes proper handling of numeric IDs, string values for names and titles, and boolean values for flags like corresponding author status.
 
-These assumptions and design decisions, combined with the robust data validation, ensure that the resulting knowledge graph is both semantically accurate and practically useful for querying and analysis.
+These assumptions and design decisions, combined with the robust data validation seen before, ensure that the resulting knowledge graph is both semantically accurate and practically useful for querying and analysis.
 
 \subsection{Querying the Ontology}
 
@@ -274,9 +264,9 @@ These queries demonstrate how our TBOX design enables:
 
 \subsection{Importing the Data}
 
-For the creation of Knowledge Graph Embeddings, we carefully selected a subset of the triples from our knowledge graph that capture the most important structural and semantic relationships. The selected data focuses on the core entities and their relationships, which are essential for learning meaningful embeddings.
+For the creation of Knowledge Graph Embeddings, we selected a subset of the triples from our knowledge graph that capture the most important structural and semantic relationships. The selected data focuses on the core entities and their relationships, which are essential for learning meaningful embeddings.
 
-The selected triples include the following key relationships:
+The selected triples include the following relationships:
 
 \begin{itemize}
     \item \textbf{Publication Relationships}:
@@ -337,7 +327,7 @@ This data selection provides a rich foundation for learning embeddings that can 
 
 \subsubsection{The most basic model}
 
-For this task, we used the paper with ID \texttt{Paper7e1f6e63f4b06efc18d9d44e46005f79} as our example. We trained a TransE model using PyKEEN with the following configuration:
+For this task, we show some basic functionality using of KGEs using a TransE model trained with PyKEEN. We used the paper with ID \texttt{Paper7e1f6e63f4b06efc18d9d44e46005f79} as our testing example. The model was trained with the following configuration:
 \begin{itemize}
     \item Embedding dimension: 50
     \item Number of epochs: 20
@@ -369,7 +359,7 @@ We implemented these calculations in Python using PyKEEN and PyTorch. The code f
     \item Most likely author: \texttt{Author67936dfd5e69470e080a42e83032e605}
 \end{itemize}
 
-It is worth noting that the predicted paper and author are correct types only because we added explicit type filtering to the model. If we did not add this filtering, the model would have predicted a Review and an Author, respectively, which are incorrect types. However, these entity type constraints are substantiated by previous literature: [TODO: add references, "Improving Knowledge Graph Embeddings with Inferred Entity Types"]
+It is worth noting that the predicted paper and author are correct types only because we added explicit type filtering to the model. If we did not add this filtering, the model would have predicted a Review and an Author, respectively, which are incorrect types.
 
 \subsubsection{Improving TransE}
 
@@ -466,7 +456,7 @@ The training process follows these steps:
         \item Batch size: [64, 128, 256]
     \end{itemize}
     
-    \item \textbf{Model Training}: Models were trained using the Adam optimizer, with early stopping enabled (patience = 5, relative\_delta = 0.002) to prevent overfitting. All experiments were conducted using CPU due to hardware constraints.
+    \item \textbf{Model Training}: Models were trained using the Adam optimizer, with early stopping enabled (patience = 5, relative\_delta = 0.002) to prevent overfitting. All experiments were conducted with GPU acceleration using CUDA.
 
     \item \textbf{Evaluation}: Each trained model was evaluated on the test fold using the following ranking-based metrics:
     \begin{itemize}
@@ -486,18 +476,16 @@ The training process follows these steps:
     \label{tab:model_comparison}
 \end{table}
 
-The best-performing model was \textbf{TransH}, which achieved an MRR of 0.151 and Hits@10 of 0.207. This result highlights TransH’s ability to better model diverse and complex relation types by introducing a relation-specific hyperplane for entity projections. The inclusion of inverse triples also significantly improved the performance of all models by doubling the observed relation directions.
+The best-performing model was \textbf{TransH}, which achieved an MRR of 0.151 and Hits@10 of 0.207. This result shows TransH's ability to better model diverse and complex relation types by introducing a relation-specific hyperplane for entity projections. The inclusion of inverse triples also significantly improved the performance of all models by doubling the observed relation directions.
 
 \textbf{DistMult} performed similarly well, particularly in Hits@1 (11.6\%), despite its known limitation in handling asymmetric relations. This suggests that a substantial portion of the graph may involve symmetric or quasi-symmetric predicates, such as \texttt{hasKeyword} or \texttt{hasReview}.
 
-\textbf{RotatE} showed moderate performance, indicating some ability to capture more complex relational patterns such as symmetry and inversion. However, it was outperformed by simpler bilinear and projection-based models, possibly due to underfitting or suboptimal hyperparameters in this setting.
+\textbf{RotatE} showed moderate performance, indicating some ability to capture more complex relational patterns such as symmetry and inversion. However, it was outperformed by simpler models, possibly due to underfitting or suboptimal hyperparameters in this setting.
 
 \textbf{TransE}, as expected, yielded the lowest results (MRR: 0.025), as its simplistic translational model struggles with multi-relational structures and many-to-many relations, which are common in academic metadata (e.g., multiple authors per paper).
 
-\textbf{ComplEx} was tested with and without inverse triples, but even with inverses, it failed to outperform other models. This could be attributed to several factors: its sensitivity to initialization, potential mismatch between model capacity and the dataset size (relatively small at $\sim$4600 triples), or insufficient tuning of regularization parameters.
-
 \paragraph{Why are the scores low?}
-Overall, absolute performance scores across all models were modest. This is likely due to the limited size and sparsity of the knowledge graph (4636 triples across 2943 entities and 12 relations), which restricts the models’ ability to generalize. Additionally, the skewed distribution of relations—where some are highly frequent (e.g., \texttt{hasAuthor}) and others sparse—makes learning consistent embeddings challenging. The lack of type constraints or schema-level information may also contribute to the difficulty of distinguishing between semantically plausible and implausible triples.
+Overall, absolute performance scores across all models were modest. This is likely due to the limited size and sparsity of the knowledge graph (4636 triples across 2943 entities and 12 relations), which restricts the models' ability to generalize. Additionally, the skewed distribution of relations—where some are highly frequent (e.g., \texttt{hasAuthor}) and others sparse—makes learning consistent embeddings challenging, as shown in Figure \ref{fig:relationship_dist}.
 
 \subsection{Exploitation analysis}
 
@@ -544,7 +532,7 @@ Table~\ref{tab:cluster_keywords} summarizes a subset of this analysis. The compl
         before row=\toprule, after row=\midrule
     },
     every last row/.style={after row=\bottomrule}
-]{doc/cluster_keywords_2022.csv}
+]{cluster_keywords_2022.csv}
 \caption{Top keywords per cluster and year extracted from author clusters over time.}
 \label{tab:cluster_keywords_csv}
 \end{table}
@@ -566,4 +554,4 @@ Table~\ref{tab:cluster_keywords} summarizes a subset of this analysis. The compl
 This temporal keyword distribution complements the clustering results, confirming that clusters are not only structurally coherent (via embeddings), but also semantically meaningful and traceable over time.
 
 
-\end{document} 
+\end{document}
