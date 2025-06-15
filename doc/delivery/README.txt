@@ -1,0 +1,1 @@
+This delivery is formatted in the requested way. However, we recommend running the code from the GitHub repository, as the requirements file is given, and everything is properly arranged: https://github.com/Quiracle/MDS-SDM-Proj2-SalatVidal

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://example.org/publication/hasKeyword">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasKeyword</rdfs:label>
+    <rdfs:comment>A keyword describing the paper's topic</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Topic"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Review">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Review</rdfs:label>
+    <rdfs:comment>An evaluation of a paper</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/isPublishedIn">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>isPublishedIn</rdfs:label>
+    <rdfs:comment>The venue where a paper is published (either proceedings or volume)</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Proceedings"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Volume"/>
+    <owl:inverseOf rdf:resource="http://example.org/publication/containsPaper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasVolume">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasVolume</rdfs:label>
+    <rdfs:comment>A volume of the journal</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Journal"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Volume"/>
+    <owl:inverseOf rdf:resource="http://example.org/publication/isVolumeOf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Proceedings">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Proceedings</rdfs:label>
+    <rdfs:comment>A collection of papers from a conference/workshop edition</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Volume">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Volume</rdfs:label>
+    <rdfs:comment>A collection of papers in a journal</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasAuthor">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasAuthor</rdfs:label>
+    <rdfs:comment>An author of the paper</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Author"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasEndDate">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasEndDate</rdfs:label>
+    <rdfs:comment>The end date of the edition</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Edition"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Paper">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Paper</rdfs:label>
+    <rdfs:comment>A research paper</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Author">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Author</rdfs:label>
+    <rdfs:comment>A person who writes papers</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasAbstract">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasAbstract</rdfs:label>
+    <rdfs:comment>The abstract of a paper</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasReview">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasReview</rdfs:label>
+    <rdfs:comment>A review of the paper</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/writes">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>writes</rdfs:label>
+    <rdfs:comment>A paper written by an author</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasCorrespondingAuthor">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasCorrespondingAuthor</rdfs:label>
+    <rdfs:comment>The corresponding author of the paper</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Author"/>
+    <rdfs:subPropertyOf rdf:resource="http://example.org/publication/hasAuthor"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasProceedings">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasProceedings</rdfs:label>
+    <rdfs:comment>The proceedings of this edition</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Edition"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Proceedings"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasVenue">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasVenue</rdfs:label>
+    <rdfs:comment>The venue where the edition takes place</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Edition"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Venue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasName">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasName</rdfs:label>
+    <rdfs:comment>The name of the author</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Author"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasStartDate">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasStartDate</rdfs:label>
+    <rdfs:comment>The start date of the edition</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Edition"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Topic">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Topic</rdfs:label>
+    <rdfs:comment>A subject area of a paper</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Venue">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Venue</rdfs:label>
+    <rdfs:comment>A location where an edition takes place</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Edition">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Edition</rdfs:label>
+    <rdfs:comment>A specific instance of a conference or workshop</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/isAssignedBy">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>isAssignedBy</rdfs:label>
+    <rdfs:comment>The person who assigned the review</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Review"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Reviewer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Conference">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Conference</rdfs:label>
+    <rdfs:comment>A well-established research forum</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://example.org/publication/Event"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Event">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Event</rdfs:label>
+    <rdfs:comment>An academic event where research is presented</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/cites">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>cites</rdfs:label>
+    <rdfs:comment>A paper that is cited by another paper</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Paper"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Paper"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasVolumeNumber">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasVolumeNumber</rdfs:label>
+    <rdfs:comment>The number of the volume</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Volume"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Reviewer">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Reviewer</rdfs:label>
+    <rdfs:comment>A scientist who reviews papers</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://example.org/publication/Author"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Journal">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Journal</rdfs:label>
+    <rdfs:comment>A periodical publication</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/Workshop">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Workshop</rdfs:label>
+    <rdfs:comment>A forum for exploring new trends</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://example.org/publication/Event"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasYear">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasYear</rdfs:label>
+    <rdfs:comment>The year of the edition</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Edition"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#gYear"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasPublicationDate">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasPublicationDate</rdfs:label>
+    <rdfs:comment>The publication date of the volume</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Volume"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasReviewText">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasReviewText</rdfs:label>
+    <rdfs:comment>The text content of the review</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Review"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/publication/hasEdition">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>hasEdition</rdfs:label>
+    <rdfs:comment>An edition of a conference or workshop</rdfs:comment>
+    <rdfs:domain rdf:resource="http://example.org/publication/Event"/>
+    <rdfs:range rdf:resource="http://example.org/publication/Edition"/>
+    <owl:inverseOf rdf:resource="http://example.org/publication/isEditionOf"/>
+  </rdf:Description>
+</rdf:RDF>
