@@ -7,13 +7,13 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{listings}
-\usepackage{xcolor}
 \usepackage{float}
 \usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
 \usepackage{pgfplotstable}
-\usepackage{booktabs} % for prettier tables
 \usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{booktabs} % for prettier tables
+\usepackage{listings}
 
 % Configure itemize spacing
 \setlist[itemize]{noitemsep, topsep=0pt, partopsep=0pt, parsep=0pt}
@@ -219,6 +219,7 @@ SELECT DISTINCT ?paper ?author ?conference ?venue WHERE{
 }
 \end{verbatim}
 
+\noindent
 This query showcases several benefits of our TBOX design:
 \begin{itemize}
     \item It leverages the explicit relationship between papers and proceedings through \texttt{isPublishedIn}
@@ -252,6 +253,8 @@ This query showcases several benefits of our TBOX design:
     \item The use of \texttt{DISTINCT} ensures we don't count multiple citations of the same paper
 \end{itemize}
 
+\vspace{1em}
+\noindent
 These queries demonstrate how our TBOX design enables:
 \begin{itemize}
     \item Complex relationship traversal across multiple entities
@@ -259,6 +262,8 @@ These queries demonstrate how our TBOX design enables:
     \item Efficient querying of hierarchical relationships
     \item Clear separation between different types of entities (papers, authors, venues, etc.)
 \end{itemize}
+\vspace{1em}
+Neither query checks the type of the entities involved, as the TBOX design ensures that the relationships are only used between compatible types. This allows us to focus on the semantic meaning of the relationships without worrying about type mismatches. 
 
 \section{Knowledge Graph Embeddings}
 
@@ -516,7 +521,7 @@ This analysis reveals that embedding-based clustering can capture real structura
 
 To further interpret the semantic coherence of the discovered author clusters, we extracted the most frequent keywords used by each cluster in each year. For this, we associated authors with their published papers, collected the \texttt{keywords} field from those papers, and aggregated them per cluster and year. The top terms per cluster were then counted to identify dominant research themes.
 
-Table~\ref{tab:cluster_keywords} summarizes a subset of this analysis. The complete results are available in the supplementary CSV file (\texttt{doc/cluster\_keywords\_by\_year.csv}).
+Table~\ref{tab:cluster_keywords_csv} summarizes a subset of this analysis. The complete results are available in the supplementary CSV file (\texttt{doc/cluster\_keywords\_by\_year.csv}).
 
 \begin{table}[H]
 \centering
@@ -537,21 +542,22 @@ Table~\ref{tab:cluster_keywords} summarizes a subset of this analysis. The compl
 \label{tab:cluster_keywords_csv}
 \end{table}
 
-\paragraph{Observations:}
+\subsubsection*{Observations on 2022 Keyword Clusters}
+
+\noindent A qualitative inspection of the 2022 keyword counts in Table~\ref{tab:cluster_keywords_csv} reveals several notable patterns:
 
 \begin{itemize}
-    \item \textbf{Persistent Topics:} Clusters focused on \textit{data processing}, \textit{data storage}, and \textit{machine learning} appear repeatedly across multiple years, indicating sustained research interest.
-    
-    \item \textbf{Emerging Trends:} \textit{Artificial intelligence} appears as a dominant term only after 2019, reflecting its recent rise in prominence within the community.
+    \item \textbf{Cluster 4 – high specialisation in bioinformatics.} 37 out of 37 recorded keywords relate to \emph{bioinformatics}, signalling a mature, topic‑focused community whose members rarely publish outside that niche.
 
-    \item \textbf{Shifting Focus:} Cluster 1's transition from \textit{data processing} in 2019 to \textit{artificial intelligence} by 2023 may suggest topic drift among a subset of authors.
+    \item \textbf{Cluster 0 – broad infrastructure hub.} With equal emphasis on \emph{big data} and \emph{data storage} (60/72 mentions) and a long tail of six minor terms, Cluster 0 appears to be a large, heterogeneous group working on foundational data‑management problems.
 
-    \item \textbf{Specialized Clusters:} Cluster 2 consistently shows strong signals for \textit{bioinformatics}, implying a domain-specific author group.
+    \item \textbf{Bridging clusters (1 and 2).} The mixed profiles of Clusters 1 and 2 (combinations of \emph{data storage}, \emph{feature selection}, \emph{big data}, and occasional \emph{bioinformatics}) suggest that their authors act as connectors between infrastructure and domain‑science communities—consistent with the rotational‑membership pattern observed earlier.
 
-    \item \textbf{Consolidation:} In 2022, both \textit{big data} and \textit{data storage} peaked together in Cluster 0, suggesting a convergence of themes under a unified group.
+    \item \textbf{Emergent analytics theme.} The presence of \emph{feature selection} in two clusters and a lone \emph{machine learning} mention in Cluster 0 hints at a gradual pivot from pure storage concerns toward data‑driven analytics workflows.
+
+    \item \textbf{Specialisation gradient.} Ordering clusters from infrastructure‑centric to domain‑centric yields: \textbf{0} $\rightarrow$ \textbf{(1, 2)} $\rightarrow$ \textbf{(3, 4)}—with Clusters 3 and 4 anchoring the bioinformatics end of the spectrum.
 \end{itemize}
 
-This temporal keyword distribution complements the clustering results, confirming that clusters are not only structurally coherent (via embeddings), but also semantically meaningful and traceable over time.
-
+These insights reinforce those drawn from the temporal cluster‑size trends (Figure~\ref{fig:cluster_evolution}), illustrating how embedding‑based clustering can uncover both thematic focus and the interplay between infrastructure and application‑domain research.
 
 \end{document}
